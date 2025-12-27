@@ -17,6 +17,7 @@ func AutoMigrate(db *gorm.DB) error {
 		&domain.Transaction{},
 		&domain.TransactionItem{},
 		&domain.InventoryMovement{},
+		&domain.Setting{},
 	)
 
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(cfg *config.Config, authHandler *handler.AuthHandler, userHandler *handler.UserHandler, categoryHandler *handler.CategoryHandler, productHandler *handler.ProductHandler, transactionHandler *handler.TransactionHandler) *gin.Engine {
+func SetupRouter(cfg *config.Config, authHandler *handler.AuthHandler, userHandler *handler.UserHandler, categoryHandler *handler.CategoryHandler, productHandler *handler.ProductHandler, transactionHandler *handler.TransactionHandler, reportsHandler *handler.ReportsHandler, settingHandler *handler.SettingHandler, dashboardHandler *handler.DashboardHandler) *gin.Engine {
 	// Set Gin mode
 	if cfg.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -95,6 +95,31 @@ func SetupRouter(cfg *config.Config, authHandler *handler.AuthHandler, userHandl
 				transactions.POST("", transactionHandler.Create)
 				transactions.POST("/bulk-sync", transactionHandler.BulkSync)
 				transactions.PATCH("/:id/cancel", middleware.RoleMiddleware("admin", "manager"), transactionHandler.Cancel)
+			}
+
+			// Reports routes
+			reports := protected.Group("/reports")
+			{
+				reports.GET("/sales-summary", reportsHandler.GetSalesSummary)
+				reports.GET("/top-products", reportsHandler.GetTopProducts)
+				reports.GET("/sales-by-payment", reportsHandler.GetSalesByPaymentMethod)
+				reports.GET("/daily-sales", reportsHandler.GetDailySales)
+			}
+
+			// Settings routes
+			settings := protected.Group("/settings")
+			{
+				settings.GET("", settingHandler.GetSettings)
+				settings.PUT("", middleware.RoleMiddleware("admin"), settingHandler.UpdateSettings)
+				settings.POST("/initialize", middleware.RoleMiddleware("admin"), settingHandler.InitializeDefaults)
+			}
+
+			// Dashboard routes
+			dashboard := protected.Group("/dashboard")
+			{
+				dashboard.GET("/stats", dashboardHandler.GetDashboardStats)
+				dashboard.GET("/recent-transactions", dashboardHandler.GetRecentTransactions)
+				dashboard.GET("/low-stock", dashboardHandler.GetLowStockProducts)
 			}
 
 			// Inventory routes

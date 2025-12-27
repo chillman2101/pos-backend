@@ -37,6 +37,7 @@ func main() {
 	categoryRepo := repository.NewCategoryRepository(db)
 	productRepo := repository.NewProductRepository(db)
 	transactionRepo := repository.NewTransactionRepository(db)
+	settingRepo := repository.NewSettingRepository(db)
 
 	// Initialize services
 	authService := service.NewAuthService(userRepo, cfg.JWTSecret)
@@ -44,6 +45,12 @@ func main() {
 	categoryService := service.NewCategoryService(categoryRepo)
 	productService := service.NewProductService(productRepo)
 	transactionService := service.NewTransactionService(transactionRepo, productRepo, db)
+	settingService := service.NewSettingService(settingRepo)
+
+	// Initialize default settings
+	if err := settingService.InitializeDefaultSettings(); err != nil {
+		log.Printf("Warning: Failed to initialize default settings: %v", err)
+	}
 
 	// Initialize handlers
 	authHandler := handler.NewAuthHandler(authService)
@@ -51,9 +58,12 @@ func main() {
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 	productHandler := handler.NewProductHandler(productService)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
+	reportsHandler := handler.NewReportsHandler(db)
+	settingHandler := handler.NewSettingHandler(settingService)
+	dashboardHandler := handler.NewDashboardHandler(db)
 
 	// Setup router
-	r := router.SetupRouter(cfg, authHandler, userHandler, categoryHandler, productHandler, transactionHandler)
+	r := router.SetupRouter(cfg, authHandler, userHandler, categoryHandler, productHandler, transactionHandler, reportsHandler, settingHandler, dashboardHandler)
 
 	// Start server
 	log.Printf("Server starting on port %s", cfg.ServerPort)
