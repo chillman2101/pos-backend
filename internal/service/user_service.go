@@ -46,12 +46,13 @@ func (s *userService) GetAll(page, limit int) ([]dto.UserResponse, int64, error)
 	var userResponses []dto.UserResponse
 	for _, user := range users {
 		userResponses = append(userResponses, dto.UserResponse{
-			ID:       user.ID.String(),
-			Username: user.Username,
-			Email:    user.Email,
-			FullName: user.FullName,
-			Role:     user.Role,
-			IsActive: user.IsActive,
+			ID:        user.ID.String(),
+			Username:  user.Username,
+			Email:     user.Email,
+			FullName:  user.FullName,
+			Role:      user.Role,
+			IsActive:  user.IsActive,
+			CreatedAt: user.CreatedAt,
 		})
 	}
 
@@ -73,12 +74,13 @@ func (s *userService) GetByID(id string) (*dto.UserResponse, error) {
 	}
 
 	return &dto.UserResponse{
-		ID:       user.ID.String(),
-		Username: user.Username,
-		Email:    user.Email,
-		FullName: user.FullName,
-		Role:     user.Role,
-		IsActive: user.IsActive,
+		ID:        user.ID.String(),
+		Username:  user.Username,
+		Email:     user.Email,
+		FullName:  user.FullName,
+		Role:      user.Role,
+		IsActive:  user.IsActive,
+		CreatedAt: user.CreatedAt,
 	}, nil
 }
 
@@ -125,12 +127,13 @@ func (s *userService) Update(id string, req *dto.UpdateUserRequest) (*dto.UserRe
 	}
 
 	return &dto.UserResponse{
-		ID:       user.ID.String(),
-		Username: user.Username,
-		Email:    user.Email,
-		FullName: user.FullName,
-		Role:     user.Role,
-		IsActive: user.IsActive,
+		ID:        user.ID.String(),
+		Username:  user.Username,
+		Email:     user.Email,
+		FullName:  user.FullName,
+		Role:      user.Role,
+		IsActive:  user.IsActive,
+		CreatedAt: user.CreatedAt,
 	}, nil
 }
 
