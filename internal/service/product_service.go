@@ -10,6 +10,7 @@ import (
 
 type ProductService interface {
 	GetAll(page, limit int) ([]*dto.ProductResponse, int64, error)
+	GetAllWithFilter(search string, categoryID string, page, limit int) ([]*dto.ProductResponse, int64, error)
 	GetByCategory(categoryID string, page, limit int) ([]*dto.ProductResponse, int64, error)
 	Create(req *dto.CreateProductRequest) (*dto.ProductResponse, error)
 	GetByID(id string) (*dto.ProductResponse, error)
@@ -145,6 +146,32 @@ func (s *productService) Delete(id string) error {
 
 func (s *productService) GetAll(page, limit int) ([]*dto.ProductResponse, int64, error) {
 	products, totalData, err := s.productRepo.FindAll(page, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var responses []*dto.ProductResponse
+	for _, product := range products {
+		responses = append(responses, s.toProductResponse(&product))
+	}
+
+	return responses, totalData, nil
+}
+
+func (s *productService) GetAllWithFilter(search string, categoryID string, page, limit int) ([]*dto.ProductResponse, int64, error) {
+	var catID *uuid.UUID
+
+	// Parse category ID if provided
+	if categoryID != "" {
+		parsedID, err := uuid.Parse(categoryID)
+		if err != nil {
+			return nil, 0, errors.New("invalid category ID format")
+		}
+		catID = &parsedID
+	}
+
+	// Call repository with filters
+	products, totalData, err := s.productRepo.FindAllWithFilter(search, catID, page, limit)
 	if err != nil {
 		return nil, 0, err
 	}

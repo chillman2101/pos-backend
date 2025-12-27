@@ -9,5 +9,6 @@ type ProductRepository interface {
 	Update(product *Product) error
 	Delete(id uuid.UUID) error
 	FindAll(page, limit int) ([]Product, int64, error)
+	FindAllWithFilter(search string, categoryID *uuid.UUID, page, limit int) ([]Product, int64, error)
 	FindByCategory(categoryID uuid.UUID, page, limit int) ([]Product, int64, error)
 }

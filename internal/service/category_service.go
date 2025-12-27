@@ -73,6 +73,7 @@ func (s *categoryService) GetByName(name string) (*dto.CategoryResponse, error) 
 		ID:          category.ID.String(),
 		Name:        category.Name,
 		Description: category.Description,
+		CreatedAt:   category.CreatedAt,
 	}, nil
 }
 
@@ -98,6 +99,7 @@ func (s *categoryService) Update(id string, req *dto.UpdateCategoryRequest) (*dt
 		ID:          category.ID.String(),
 		Name:        category.Name,
 		Description: category.Description,
+		CreatedAt:   category.CreatedAt,
 	}, nil
 }
 
@@ -121,6 +123,7 @@ func (s *categoryService) GetAll(page, limit int) ([]*dto.CategoryResponse, int6
 			ID:          category.ID.String(),
 			Name:        category.Name,
 			Description: category.Description,
+			CreatedAt:   category.CreatedAt,
 		})
 	}
 

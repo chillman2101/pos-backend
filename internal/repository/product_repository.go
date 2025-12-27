@@ -55,6 +55,36 @@ func (r *productRepository) FindAll(page, limit int) ([]domain.Product, int64, e
 	return products, count, nil
 }
 
+func (r *productRepository) FindAllWithFilter(search string, categoryID *uuid.UUID, page, limit int) ([]domain.Product, int64, error) {
+	var products []domain.Product
+	var count int64
+
+	// Build query
+	query := r.db.Model(&domain.Product{})
+
+	// Apply search filter (search in name and SKU)
+	if search != "" {
+		query = query.Where("LOWER(name) LIKE ? OR LOWER(sku) LIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+
+	// Apply category filter
+	if categoryID != nil {
+		query = query.Where("category_id = ?", *categoryID)
+	}
+
+	// Get count
+	if err := query.Count(&count).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Get paginated results
+	if err := query.Preload("Category").Offset((page - 1) * limit).Limit(limit).Find(&products).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return products, count, nil
+}
+
 func (r *productRepository) FindByCategory(categoryID uuid.UUID, page, limit int) ([]domain.Product, int64, error) {
 	var products []domain.Product
 	var count int64

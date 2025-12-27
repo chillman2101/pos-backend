@@ -21,7 +21,9 @@ func NewPostgresDB(cfg *config.Config) (*gorm.DB, error) {
 
 	// Open database connection
 	db, err := gorm.Open(postgres.Open(cfg.DatabaseURL), &gorm.Config{
-		Logger: gormLogger,
+		Logger:                                   gormLogger,
+		PrepareStmt:                              false, // Disable prepared statements for Supabase pooler
+		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error opening database: %w", err)

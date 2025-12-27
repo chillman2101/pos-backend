@@ -25,7 +25,21 @@ func (h *ProductHandler) GetAll(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
-	products, total, err := h.productService.GetAll(page, limit)
+	// Get filter parameters
+	search := c.Query("search")
+	categoryID := c.Query("category_id")
+
+	var products []*dto.ProductResponse
+	var total int64
+	var err error
+
+	// Use filtered query if search or category_id is provided
+	if search != "" || categoryID != "" {
+		products, total, err = h.productService.GetAllWithFilter(search, categoryID, page, limit)
+	} else {
+		products, total, err = h.productService.GetAll(page, limit)
+	}
+
 	if err != nil {
 		response.InternalServerError(c, "Failed to get products", err.Error())
 		return
