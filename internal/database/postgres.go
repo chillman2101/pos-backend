@@ -26,7 +26,7 @@ func NewPostgresDB(cfg *config.Config) (*gorm.DB, error) {
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("error opening database: %w", err)
+		return nil, fmt.Errorf("error opening database : %w", err)
 	}
 
 	// Get underlying SQL DB for connection pool settings
